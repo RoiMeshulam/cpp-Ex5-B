@@ -20,6 +20,7 @@ namespace ariel{
             Node* _next;
             bool _visited;
             vector<Node*> _children;
+            Node():_next(nullptr),_visited(false){}
         }Node;
 
 
@@ -29,7 +30,9 @@ namespace ariel{
         vector<Node*> _allNodes;
         vector<Node*> _preOrder;
     public:
-        OrgChart():_root(nullptr),_tail(nullptr),_preOrder(),_allNodes(){
+        OrgChart():_root(nullptr),_tail(nullptr){
+            _preOrder.resize(0);
+            _allNodes.resize(0);
             cout<< "OrgChart was created"<<endl;
         }
         OrgChart(const OrgChart &other){
@@ -40,11 +43,24 @@ namespace ariel{
             }
             if(other._root == NULL){
                 this->_root = NULL;
+                this->_tail=NULL;
             }
             else{
                 this->_root = this->_allNodes.at(0);
+                this->_tail= other._tail;
             }
         }
+
+        OrgChart &operator=(const OrgChart& other)=default;
+        OrgChart (OrgChart & orgChart)=default;
+        OrgChart(OrgChart&&) noexcept;
+        OrgChart& operator=(OrgChart &&orgChart) noexcept;
+
+
+
+
+
+
         ~OrgChart(){
             for(Node* n: this->_allNodes){
                 n->_next= nullptr;
@@ -68,9 +84,12 @@ namespace ariel{
 
 
         public:
-            OrgChartIterator(Node* ptr = nullptr): _current_node(ptr) {
-            }
+            OrgChartIterator(Node* ptr = nullptr): _current_node(ptr) {}
             ~OrgChartIterator(){}
+            OrgChartIterator(const OrgChartIterator& it);
+            OrgChartIterator& operator=(const OrgChartIterator& it);
+            OrgChartIterator(OrgChartIterator&& it) noexcept;
+            OrgChartIterator &operator=(OrgChartIterator&& it) noexcept;
 
             Node* operator&(){
                 return _current_node;
@@ -94,7 +113,7 @@ namespace ariel{
 
             // i++;
             // Usually iterators are passed by value and not by const& as they are small.
-            const OrgChartIterator operator++(int) {
+             OrgChartIterator operator++(int) {
                 OrgChartIterator tmp= *this;
                 _current_node= _current_node->_next;
                 return tmp;
